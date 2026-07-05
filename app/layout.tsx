@@ -1,0 +1,58 @@
+import { Analytics } from '@vercel/analytics/next'
+import type { Metadata, Viewport } from 'next'
+import { Inter, Poppins } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-poppins',
+})
+
+export const metadata: Metadata = {
+  title: 'My Auto Care Expert (M.A.C.E.) | Pickup & Delivery Car Care in Maricopa, AZ',
+  description:
+    'We pick it up, fix it, and bring it back. Concierge-style routine auto maintenance in Maricopa, AZ from a mechanic with 20+ years of experience. Call or text to schedule.',
+  generator: 'v0.app',
+  icons: {
+    icon: [
+      {
+        url: '/icon-light-32x32.png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/icon-dark-32x32.png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon.svg',
+        type: 'image/svg+xml',
+      },
+    ],
+    apple: '/apple-icon.png',
+  },
+}
+
+export const viewport: Viewport = {
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en" className={`light bg-background ${inter.variable} ${poppins.variable}`}>
+      <body className="font-sans antialiased">
+        {children}
+        {process.env.NODE_ENV === 'production' && <Analytics />}
+      </body>
+    </html>
+  )
+}
