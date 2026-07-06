@@ -9,15 +9,14 @@ export function SiteFooter() {
         {/* Brand */}
         <div className="lg:col-span-1">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Wrench className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span className="flex flex-col leading-none">
-              <span className="font-serif text-sm font-bold tracking-tight text-foreground">My Auto Care Expert</span>
-              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                {site.abbr}
-              </span>
-            </span>
+           {/* Logo */}
+<a href="#top" className="flex items-center" aria-label={`${site.name} home`}>
+  <img 
+    src="/Logo Blue.png" 
+    alt="M.A.C.E. Logo" 
+    className="h-10 w-auto md:h-12 object-contain" 
+  />
+</a>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
             Concierge pickup-and-delivery car care from a trusted local expert with 20+ years of experience.
