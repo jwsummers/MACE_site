@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Phone, MapPin, ShieldCheck, Star } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { site } from "@/lib/site"
 
 export function Hero() {
@@ -25,15 +25,22 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="gap-2">
-              <a href="#contact">Schedule a Pickup</a>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="gap-2">
-              <a href={site.phoneHref}>
-                <Phone className="h-4 w-4" aria-hidden="true" />
-                Call or Text {site.phone}
-              </a>
-            </Button>
+            {/* FIXED: Primary button styled directly on anchor tag */}
+            <a 
+              href="#contact" 
+              className={buttonVariants({ size: "lg", className: "gap-2" })}
+            >
+              Schedule a Pickup
+            </a>
+
+            {/* FIXED: Outline button styled directly on anchor tag */}
+            <a 
+              href={site.phoneHref} 
+              className={buttonVariants({ size: "lg", variant: "outline", className: "gap-2" })}
+            >
+              <Phone className="h-4 w-4" aria-hidden="true" />
+              Call or Text {site.phone}
+            </a>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
@@ -50,7 +57,8 @@ export function Hero() {
 
         {/* Image */}
         <div className="relative">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/5">
+          {/* FIXED: Changed aspect-[4/3] to canonical aspect-4/3 */}
+          <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/5">
             <Image
               src="/images/hero-pickup.png"
               alt="Friendly mechanic receiving car keys from a customer in a Maricopa driveway"

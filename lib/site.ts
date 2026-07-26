@@ -1,9 +1,9 @@
 export const site = {
   name: "My Auto Care Expert",
   abbr: "M.A.C.E.",
-  phone: "(480) 555-0142",
-  phoneHref: "tel:+14805550142",
-  smsHref: "sms:+14805550142",
+  phone: "(301) 256-8806",
+  phoneHref: "tel:+13012568806",
+  smsHref: "sms:+13012568806",
   instagram: "https://instagram.com/myautocareexpert",
   instagramHandle: "@myautocareexpert",
   email: "hello@myautocareexpert.com",

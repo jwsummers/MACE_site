@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Phone, Mail, MapPin, CheckCircle2 } from "lucide-react"
+import { Phone, Mail, MapPin, CheckCircle2, Loader2 } from "lucide-react"
 import { InstagramIcon } from "@/components/instagram-icon"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,10 +11,41 @@ import { site } from "@/lib/site"
 
 export function Contact() {
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitting(true)
+    setError(null)
+
+    const formData = new FormData(e.currentTarget)
+    const payload = Object.fromEntries(formData)
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to send message")
+      }
+
+      setSubmitted(true)
+    } catch (err) {
+      setError("Something went wrong. Please try again or call/text us directly.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  function handleReset() {
+    setSubmitted(false)
+    setError(null)
   }
 
   return (
@@ -92,7 +123,7 @@ export function Contact() {
               <p className="mt-2 max-w-sm leading-relaxed text-muted-foreground">
                 We'll reach out shortly to confirm your pickup. Need something sooner? Call or text {site.phone}.
               </p>
-              <Button variant="outline" className="mt-6" onClick={() => setSubmitted(false)}>
+              <Button variant="outline" className="mt-6" onClick={handleReset}>
                 Send another request
               </Button>
             </div>
@@ -128,11 +159,20 @@ export function Contact() {
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="vin">
-                  VIN <span className="font-normal text-muted-foreground">(Optional)</span>
-                </Label>
-                <Input id="vin" name="vin" placeholder="1HGCM82633A004352" />
+              {/* Vehicle Identifiers (VIN & Plate) */}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="vin">
+                    VIN <span className="font-normal text-muted-foreground">(Optional)</span>
+                  </Label>
+                  <Input id="vin" name="vin" placeholder="1HGCM82633A004352" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="plate">
+                    License Plate <span className="font-normal text-muted-foreground">(Optional)</span>
+                  </Label>
+                  <Input id="plate" name="plate" placeholder="ABC 1234" />
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -146,8 +186,21 @@ export function Contact() {
                 />
               </div>
 
-              <Button type="submit" size="lg" className="mt-1 w-full">
-                Request My Pickup
+              {error && (
+                <p className="rounded-lg bg-destructive/10 p-3 text-center text-sm font-medium text-destructive">
+                  {error}
+                </p>
+              )}
+
+              <Button type="submit" size="lg" className="mt-1 w-full" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    Sending Request...
+                  </>
+                ) : (
+                  "Request My Pickup"
+                )}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
                 Prefer to talk? Call or text {site.phone}—we're happy to help.
