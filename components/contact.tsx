@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Phone, Mail, MapPin, CheckCircle2, Loader2 } from "lucide-react"
 import { InstagramIcon } from "@/components/instagram-icon"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,12 @@ export function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [formTimestamp, setFormTimestamp] = useState<number>(0)
+
+  // Track exact timestamp when form renders on the client
+  useEffect(() => {
+    setFormTimestamp(Date.now())
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -46,6 +52,7 @@ export function Contact() {
   function handleReset() {
     setSubmitted(false)
     setError(null)
+    setFormTimestamp(Date.now())
   }
 
   return (
@@ -129,6 +136,12 @@ export function Contact() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              {/* Anti-Spam Hidden Fields */}
+              <div className="hidden" aria-hidden="true">
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                <input type="hidden" name="formTimestamp" value={formTimestamp} />
+              </div>
+
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="name">Name</Label>

@@ -14,45 +14,42 @@ export async function POST(request: Request) {
       email,
       phone,
       vin,
+      plate,
       message,
       website, // Honeypot field
       formTimestamp,
-      "g-recaptcha-response": recaptchaResponse,
     } = body
 
     // 1. Honeypot check
+    // If 'website' is filled out, return 200 OK silently so the bot thinks it succeeded
     if (website) {
-      return NextResponse.json({ message: "Spam detected" }, { status: 400 })
+      return NextResponse.json({ message: "Email sent successfully" }, { status: 200 })
     }
 
-    // 2. Time-based validation (under 3 seconds = bot)
+    // 2. Time-based validation
+    // If submitted under 2.5 seconds, return 200 OK silently
     const now = Date.now()
-    if (formTimestamp && now - parseInt(formTimestamp, 10) < 3000) {
-      return NextResponse.json({ message: "Form submitted too quickly" }, { status: 400 })
+    if (formTimestamp && now - parseInt(formTimestamp, 10) < 2500) {
+      return NextResponse.json({ message: "Email sent successfully" }, { status: 200 })
     }
 
-    // 3. Verify reCAPTCHA
-    if (!recaptchaResponse) {
-      return NextResponse.json({ message: "reCAPTCHA validation failed" }, { status: 400 })
-    }
-
-    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY
-    const recaptchaRes = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaResponse}`,
-      { method: "POST" }
-    )
-    const recaptchaData = await recaptchaRes.json()
-
-    if (!recaptchaData.success) {
-      return NextResponse.json({ message: "reCAPTCHA validation failed" }, { status: 400 })
-    }
-
-    // 4. Send Email via SendGrid
+    // 3. Send Email via SendGrid
     const msg = {
       to: "maceautomotive@gmail.com",
-      from: "maceautomotive@gmail.com", // Must be a verified Sender Identity in SendGrid
+      from: "maceautomotive@gmail.com",
       subject: "New Website Lead - M.A.C.E. Contact Form",
-      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nVIN: ${vin || "N/A"}\nMessage: ${message}`,
+      text: `
+New Pickup Request Received:
+
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+VIN: ${vin || "N/A"}
+License Plate: ${plate || "N/A"}
+
+Message / Request:
+${message}
+      `.trim(),
     }
 
     await sgMail.send(msg)
